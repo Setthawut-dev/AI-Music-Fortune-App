@@ -6,7 +6,7 @@ st.set_page_config(page_title="AI Music Fortune Teller", page_icon="🔮")
 st.title("🔮 AI Music Fortune Teller 2026")
 
 # --- 2. ตั้งค่า API Key ---
-GEMINI_KEY = "AIzaSyBpm407vYBE8_6QMwP4Ube5pN6ALIJMebk" 
+GEMINI_KEY = "AIzaSyDzrTUBKTz_CZT4M5Ne-1hbELPjyWmUijA" 
 genai.configure(api_key=GEMINI_KEY)
 
 # --- 3. ระบบเลือก Model (แก้ไขปัญหาสตริงกับลิสต์เรียบร้อยแล้ว) ---
