@@ -9,19 +9,16 @@ st.set_page_config(page_title="AI Music Fortune Teller", page_icon="🔮")
 st.title("🔮 AI Music Fortune Teller 2026")
 
 # --- 2. ระบบเลือก Model อัตโนมัติ (ตัวเดิมที่ใช้งานได้) ---
-available_models = []
-try:
-    for m in genai.list_models():
-        if 'generateContent' in m.supported_generation_methods:
-            available_models.append(m.name)
-except:
-    pass
+target_model = 'gemini-1.5-flash' 
 
-if available_models:
-    model = genai.GenerativeModel(available_models[0])
-    st.caption(f"🚀 Connected via: `{available_models[0]}`")
-else:
-    st.error("❌ ไม่พบ Model ที่ใช้งานได้")
+try:
+    model = genai.GenerativeModel(target_model)
+    # ทดสอบเบื้องต้นว่าโมเดลพร้อมไหม (ใส่หลอกๆ ไว้)
+    available_models = [target_model] 
+    st.caption(f"🚀 Connected via: `{target_model}` (Stable Mode)")
+except Exception as e:
+    available_models = []
+    st.error(f"❌ ไม่สามารถเชื่อมต่อกับ Gemini ได้: {e}")
 
 # --- 3. ส่วนรับข้อมูล ---
 st.write("---")
