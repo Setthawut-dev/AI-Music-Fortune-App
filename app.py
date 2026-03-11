@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # --- 1. ตั้งค่า API Key (ใช้ตัวเดิมที่คุณรันผ่าน) ---
-GEMINI_KEY = "AIzaSyCXGorUX-NC_EVzNTXRDnbZ5AzBRRecqcM" 
+GEMINI_KEY = "AIzaSyBpm407vYBE8_6QMwP4Ube5pN6ALIJMebk" 
 genai.configure(api_key=GEMINI_KEY)
 
 st.set_page_config(page_title="AI Music Fortune Teller", page_icon="🔮")
