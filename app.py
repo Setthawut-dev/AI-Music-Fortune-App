@@ -11,13 +11,20 @@ genai.configure(api_key=GEMINI_KEY)
 
 # --- 3. ระบบเลือก Model (ใช้ตรรกะจากโค้ดที่ทำสำเร็จ) ---
 try:
-    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    model_name = available_models if available_models else 'gemini-1.5-flash'
+    # ดึงรายชื่อโมเดล
+    models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    
+    # เลือกโมเดลตัวแรกจาก List (ต้องมี) หรือถ้าหาไม่เจอให้ใช้ชื่อมาตรฐาน
+    if models:
+        model_name = models # ดึงตัวแรกออกมาจากรายการ
+    else:
+        model_name = 'models/gemini-1.5-flash' # ใส่ชื่อเต็มแบบ safe mode
+        
     model = genai.GenerativeModel(model_name)
-    st.caption(f"🚀 Connected via: `{model_name}`")
+    st.caption(f"🚀 System Online | Model: `{model_name}`")
 except Exception as e:
-    st.error(f"เกิดข้อผิดพลาดในการเชื่อมต่อ API: {e}")
-    # กำหนดค่า default ไว้กันพัง
+    st.error(f"การเชื่อมต่อมีปัญหา: {e}")
+    # ถ้าพังจริงๆ ให้บังคับใช้ชื่อนี้
     model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- 4. ส่วนรับข้อมูล ---
