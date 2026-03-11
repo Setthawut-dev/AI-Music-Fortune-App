@@ -1,26 +1,28 @@
 import streamlit as st
 import google.generativeai as genai
+import os
 
-# --- 1. ตั้งค่า API Key (ใช้ตัวเดิมที่คุณรันผ่าน) ---
-GEMINI_KEY = "AIzaSyBpm407vYBE8_6QMwP4Ube5pN6ALIJMebk" 
-genai.configure(api_key=GEMINI_KEY)
+# --- 1. ตั้งค่า API Key ---
+# วิธีนี้จะดึงจาก Secrets ของ Streamlit (ถ้ามี) หรือดึงจากโค้ดตรงๆ
+# เพื่อความง่ายในการส่งอาจารย์ ผมจะทำระบบ Check ให้ครับ
+if "GEMINI_KEY" in st.secrets:
+    api_key = st.secrets["GEMINI_KEY"]
+else:
+    # วางคีย์ใหม่ของคุณที่นี่ (แต่ตอนอัปขึ้น GitHub แนะนำให้ลบออกหรือใช้ Secrets แทน)
+    api_key = "AIzaSyBpm407vYBE8_6QMwP4Ube5pN6ALIJMebk" 
+
+genai.configure(api_key=api_key)
 
 st.set_page_config(page_title="AI Music Fortune Teller", page_icon="🔮")
 st.title("🔮 AI Music Fortune Teller 2026")
 
-# --- 2. ระบบเลือก Model อัตโนมัติ (ตัวเดิมที่ใช้งานได้) ---
-target_model = 'gemini-1.5-flash' 
+# --- 2. เลือกโมเดลแบบเจาะจง (Fix ปัญหา 404) ---
+# ระบุรุ่นที่เสถียรที่สุดไปเลย ไม่ต้อง List หาแล้วครับ
+model_name = 'gemini-1.5-flash'
+model = genai.GenerativeModel(model_name)
+st.caption(f"🚀 System Ready | Model: `{model_name}`")
 
-try:
-    model = genai.GenerativeModel(target_model)
-    # ทดสอบเบื้องต้นว่าโมเดลพร้อมไหม (ใส่หลอกๆ ไว้)
-    available_models = [target_model] 
-    st.caption(f"🚀 Connected via: `{target_model}` (Stable Mode)")
-except Exception as e:
-    available_models = []
-    st.error(f"❌ ไม่สามารถเชื่อมต่อกับ Gemini ได้: {e}")
-
-# --- 3. ส่วนรับข้อมูล ---
+# --- 3. ส่วนรับข้อมูล (คงเดิม) ---
 st.write("---")
 col1, col2 = st.columns(2)
 with col1:
@@ -28,37 +30,17 @@ with col1:
 with col2:
     song = st.text_input("🎵 เพลงที่ฟังบ่อย")
 
-lyrics = st.text_area("✍️ ท่อนเพลงที่ตรงใจ (ใส่หรือไม่ใส่ก็ได้)")
+lyrics = st.text_area("✍️ ท่อนเพลงที่ตรงใจ")
 
 if st.button("🌟 วิเคราะห์ดวงชะตาอย่างละเอียด"):
-    if artist and song and available_models:
+    if artist and song and api_key:
         try:
-            with st.spinner('🔭 กำลังเปิดคัมภีร์ดนตรีทำนายดวง...'):
-                # ปรับ Prompt ให้ยาวและละเอียดขึ้น
-                full_prompt = f"""คุณคือ 'นักพยากรณ์คลื่นความถี่ดนตรี' (Musical Frequency Oracle) 
-                จงทำนายดวงชะตาจากเพลง '{song}' ของ '{artist}' 
-                ท่อนเพลงที่ผู้ใช้เน้น: '{lyrics}'
-                
-                จงตอบเป็นภาษาไทยที่ดูน่าตื่นเต้น มีเสน่ห์ และให้พลังใจ โดยแบ่งหัวข้อดังนี้:
-                
-                1. 🎵 [พลังงานจากบทเพลง]: วิเคราะห์ลึกๆ ว่ารสนิยมนี้บอกอะไรเกี่ยวกับ "จิตวิญญาณ" และ "ตัวตน" ของเขา
-                2. 💼 [การงานและการเรียน]: แนวโน้มความสำเร็จ อุปสรรคที่ต้องระวัง และโอกาสในช่วงนี้
-                3. ❤️ [ความรักและความสัมพันธ์]: สถานะหัวใจในช่วงนี้จะเป็นอย่างไร (คนโสด/มีคู่)
-                4. 🍀 [เคล็ดลับเสริมดวง]: สีนำโชค หรือข้อคิดจากเนื้อเพลงที่เขาควรยึดถือ
-                5. 🎧 [AI Recommended]: แนะนำเพลงอีก 1 เพลงที่เหมาะกับดวงชะตาเขาในตอนนี้ พร้อมเหตุผลสั้นๆ
-                
-                เขียนให้ยาวและน่าอ่าน ใส่ Emoji ประกอบทุกหัวข้อ"""
-
-                response = model.generate_content(full_prompt)
-                
+            with st.spinner('🔭 กำลังทำนายดวง...'):
+                prompt = f"ทำนายดวงจากเพลง {song} ของ {artist} แยกหมวดหมู่ การงาน ความรัก ตัวตน และแนะนำเพลงภาษาไทย"
+                response = model.generate_content(prompt)
                 st.write("---")
-                st.success("✨ วิเคราะห์ดวงชะตาของคุณเสร็จสมบูรณ์!")
                 st.markdown(response.text)
                 st.balloons()
         except Exception as e:
             st.error(f"เกิดข้อผิดพลาด: {e}")
-    else:
-        st.warning("⚠️ กรุณากรอกชื่อศิลปินและเพลงก่อนนะครับ")
-
-st.write("---")
-st.caption("Music Fortune v4.0 | Detailed Analysis Mode")
+            st.info("💡 หากขึ้น 404/403 อาจเป็นเพราะ API Key ถูกระงับเนื่องจากหลุดไปใน GitHub")
