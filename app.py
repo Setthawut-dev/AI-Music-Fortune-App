@@ -9,7 +9,7 @@ try:
     GEMINI_KEY = st.secrets["GEMINI_KEY"]
     # สร้าง Client แบบใหม่
     client = genai.Client(api_key=GEMINI_KEY)
-    model_name = "gemini-1.5-flash"
+    model_name = "gemini-1.5-flash-latest"
     st.success(f"🚀 System Ready | Model: {model_name} (New SDK)")
 except Exception as e:
     st.error("⚠️ ไม่พบ API Key หรือการเชื่อมต่อมีปัญหา กรุณาตั้งค่าใน Streamlit Secrets")
